@@ -55,7 +55,6 @@ function insertCellData(rows, sheet, startRowIndex = 0) {
         const richText = new RichText();
         // richText 의 스타일 속성 적용
         column.text.forEach(({ text, style }) => {
-          console.log({ text, style });
           richText.add(text, (style = style || {}));
         });
         // 셀 삽입 변수 변경
@@ -77,7 +76,6 @@ function insertCellData(rows, sheet, startRowIndex = 0) {
 
         if (column?.style) {
           Object.keys(column.style).forEach((key) => {
-            console.log(positionName, key, column.style[key]);
             cell.style(key, column.style[key]);
           });
         }
@@ -92,9 +90,7 @@ function insertCellData(rows, sheet, startRowIndex = 0) {
  * @param {*} sheet
  */
 function setColumnWidth(columnWidth, sheet) {
-  // 컬럼 넓이 지정
   columnWidth.forEach((width, columnIndex) => {
-    console.log("컬럼 넓이지정", getColumnAlphabet(columnIndex), width);
     sheet.column(getColumnAlphabet(columnIndex)).width(width);
   });
 }
