@@ -55,17 +55,14 @@ function insertCellData(rows, sheet, startRowIndex = 0) {
         // case : 일반 텍스트
         case typeof column === "string": {
           insertData = column;
-          console.log("column === string");
           break;
         }
         case typeof column?.text === "string": {
-          console.log("column.text === string");
           insertData = column.text;
           break;
         }
         // case : richText 변환 대상
         case Array.isArray(column?.text): {
-          console.log("column.text === rich");
           const richText = new RichText();
           // richText 의 스타일 속성 적용
           column.text.forEach(({ text, style }) => {
