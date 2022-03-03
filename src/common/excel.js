@@ -50,21 +50,34 @@ function insertCellData(rows, sheet, startRowIndex = 0) {
     columns.forEach((column, columnIndex) => {
       // 셀 삽입 데이터 변수 생성
       let insertData = null;
-      // 컬럼 데이터가 배열 인지 여부(이 경우에는 richText 입력으로 간주)
-      if (Array.isArray(column?.text)) {
-        const richText = new RichText();
-        // richText 의 스타일 속성 적용
-        column.text.forEach(({ text, style }) => {
-          richText.add(text, (style = style || {}));
-        });
-        // 셀 삽입 변수 변경
-        insertData = richText;
-      } else if (typeof column?.text === "string") {
-        // 이 경우는 셀 삽입 변수가 문자열, 셀 삽입 변수 변경
-        insertData = column.text;
+
+      switch (true) {
+        // case : 일반 텍스트
+        case typeof column === "string": {
+          insertData = column;
+          console.log("column === string");
+          break;
+        }
+        case typeof column?.text === "string": {
+          console.log("column.text === string");
+          insertData = column.text;
+          break;
+        }
+        // case : richText 변환 대상
+        case Array.isArray(column?.text): {
+          console.log("column.text === rich");
+          const richText = new RichText();
+          // richText 의 스타일 속성 적용
+          column.text.forEach(({ text, style }) => {
+            richText.add(text, (style = style || {}));
+          });
+          // 셀 삽입 변수 변경
+          insertData = richText;
+          break;
+        }
       }
 
-      // 셀 삽입 변수가 존재하는 경우에만 삽입
+      // 삽입 데이터가 존재하는 경우에만 셀에 데이터 삽입
       if (insertData) {
         // 알파벳 좌표 계산
         const positionName = `${getColumnAlphabet(columnIndex)}${
