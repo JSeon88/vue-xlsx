@@ -39,9 +39,10 @@ export const fileDownload = (blob, filename) => {
 };
 
 /**
- *
+ * 셀 데이터 주입
  * @param {*} rows
  * @param {*} sheet
+ * @param {number} startRowIndex
  */
 function insertCellData(rows, sheet, startRowIndex = 0) {
   rows.forEach((columns, rowIndex) => {
@@ -86,6 +87,36 @@ function insertCellData(rows, sheet, startRowIndex = 0) {
 }
 
 /**
+ * 컬럼 넓이 지정
+ * @param {number[]} columnWidth
+ * @param {*} sheet
+ */
+function setColumnWidth(columnWidth, sheet) {
+  // 컬럼 넓이 지정
+  columnWidth.forEach((width, columnIndex) => {
+    console.log("컬럼 넓이지정", getColumnAlphabet(columnIndex), width);
+    sheet.column(getColumnAlphabet(columnIndex)).width(width);
+  });
+}
+
+/**
+ * 셀 머지
+ * @param {*} merges
+ * @param {*} sheet
+ */
+function mergeCell(merges, sheet) {
+  merges.forEach(({ start, end }) => {
+    const startPositionName = `${getColumnAlphabet(start.columnIndex)}${
+      start.rowIndex + 1
+    }`;
+    const endPositionName = `${getColumnAlphabet(end.columnIndex)}${
+      end.rowIndex + 1
+    }`;
+    sheet.range(`${startPositionName}:${endPositionName}`).merged(true);
+  });
+}
+
+/**
  * 엑셀 파일 생성
  * @param {*} rawData
  * @param {string} filename
@@ -95,6 +126,7 @@ export async function createExcelFile(
   filename
 ) {
   const workbook = await XlsxPopulate.fromBlankAsync();
+
   // 워크북 생성
   const sheet = workbook.sheet("Sheet1");
 
@@ -105,21 +137,10 @@ export async function createExcelFile(
   insertCellData(list, sheet, category.length);
 
   // 컬럼 넓이 지정
-  columnWidth.forEach((width, columnIndex) => {
-    console.log("컬럼 넓이지정", getColumnAlphabet(columnIndex), width);
-    sheet.column(getColumnAlphabet(columnIndex)).width(width);
-  });
+  setColumnWidth(columnWidth, sheet);
 
   // 셀 머지
-  merges.forEach(({ start, end }) => {
-    const startPositionName = `${getColumnAlphabet(start.columnIndex)}${
-      start.rowIndex + 1
-    }`;
-    const endPositionName = `${getColumnAlphabet(end.columnIndex)}${
-      end.rowIndex + 1
-    }`;
-    sheet.range(`${startPositionName}:${endPositionName}`).merged(true);
-  });
+  mergeCell(merges, sheet);
 
   // blob 생성
   const blob = await workbook.outputAsync();
